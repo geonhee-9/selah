@@ -37,7 +37,7 @@
         <div class="booking-form">
             <h2>{{ church.name }} 예약하기</h2>
             <div class="rate-info">
-                시간당 {{ "{:,}".format(church.hourly_rate) }}원
+                시간당 {{ "{:,}".format(int(church.hourly_rate)) }}원
             </div>
             
             <form method="POST">

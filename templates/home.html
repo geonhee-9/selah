@@ -117,7 +117,7 @@
                         <p class="description">{{ church.description }}</p>
                         <div class="church-details">
                             <span class="capacity">수용인원: {{ church.capacity }}명</span>
-                            <span class="rate">시간당 {{ "{:,}".format(church.hourly_rate) }}원</span>
+                            <span class="rate">시간당 {{ "{:,}".format(int(church.hourly_rate)) }}원</span>
                         </div>
                         <p class="facilities"><strong>시설:</strong> {{ church.facilities }}</p>
                         <p class="equipment"><strong>장비:</strong> {{ church.equipment }}</p>
