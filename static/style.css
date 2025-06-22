@@ -1,0 +1,641 @@
+/* 기본 스타일 리셋 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 네비게이션 */
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.nav-container h1 {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-left: 1rem;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    margin-right: 1rem;
+}
+
+.nav-menu a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-menu a:hover {
+    color: #ffd700;
+}
+
+/* 히어로 섹션 */
+.hero {
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+    background-size: cover;
+    background-position: center;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+}
+
+.hero-content h2 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* 필터 섹션 */
+.filter-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin: 2rem 0;
+}
+
+.filter-section h3 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.filter-options {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: #333;
+}
+
+.filter-group select {
+    padding: 0.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    min-width: 150px;
+}
+
+.filter-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* 교회 카드 그리드 */
+.churches {
+    padding: 4rem 0;
+}
+
+.churches h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: #333;
+}
+
+.church-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.church-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.church-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.church-image {
+    height: 200px;
+    overflow: hidden;
+}
+
+.church-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.church-card:hover .church-image img {
+    transform: scale(1.05);
+}
+
+.church-info {
+    padding: 1.5rem;
+}
+
+.church-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.address {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.description {
+    color: #555;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.church-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.capacity {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.rate {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.facilities, .equipment {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.facilities strong, .equipment strong {
+    color: #333;
+}
+
+/* 버튼 스타일 */
+.btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+/* 교회 상세 페이지 */
+.church-detail {
+    padding: 2rem 0;
+}
+
+.church-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+.church-image-large {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.church-image-large img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+}
+
+.church-info-large h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.church-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.stat {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.stat .label {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.stat .value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.contact-info {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+}
+
+.contact-info h3 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* 폼 스타일 */
+.booking-form, .auth-form {
+    max-width: 600px;
+    margin: 2rem auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.booking-form h2, .auth-form h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.rate-info {
+    text-align: center;
+    color: #28a745;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.auth-links {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.auth-links a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+/* 대시보드 */
+.dashboard {
+    padding: 2rem 0;
+}
+
+.dashboard h2 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.bookings-table {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-top: 2rem;
+}
+
+.bookings-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.bookings-table th,
+.bookings-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.bookings-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.bookings-table tr:hover {
+    background: #f8f9fa;
+}
+
+.status {
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.no-bookings {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.no-bookings p {
+    margin-bottom: 1.5rem;
+    color: #666;
+}
+
+/* 관리자 대시보드 */
+.admin-dashboard {
+    padding: 2rem 0;
+}
+
+.admin-dashboard h2 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+/* 통계 차트 */
+.stats-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.stats-section h3 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.stat-card h4 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.chart-container {
+    height: 300px;
+    margin-top: 1rem;
+}
+
+.popular-churches {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.church-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.church-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.booking-count {
+    color: #667eea;
+    font-weight: 600;
+}
+
+/* 플래시 메시지 */
+.flash-messages {
+    margin-bottom: 1.5rem;
+}
+
+.flash-message {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* 푸터 */
+footer {
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 4rem;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .nav-container h1 {
+        margin-left: 0;
+    }
+    
+    .nav-menu {
+        gap: 1rem;
+        margin-right: 0;
+    }
+    
+    .hero-content h2 {
+        font-size: 2rem;
+    }
+    
+    .church-header {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .church-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .bookings-table {
+        overflow-x: auto;
+    }
+    
+    .filter-options {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ church.name }} - Selah</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .church-image-large {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 4rem;
+        }
+        
+        .church-image-large.church1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .church-image-large.church2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .church-image-large.church3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .church-image-large.church4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .church-image-large.church5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .church-image-large.church6 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .church-image-large.church7 { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+        .church-image-large.church8 { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+        .church-image-large.church9 { background: linear-gradient(135deg, #a8caba 0%, #5d4e75 100%); }
+        .church-image-large.church10 { background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); }
+        .church-image-large.church11 { background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
+        .church-image-large.church12 { background: linear-gradient(135deg, #fdbb2d 0%, #22c1c3 100%); }
+        
+        .nav-container h1 {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        
+        .nav-container h1:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="nav-container">
+            <h1 onclick="window.location.href='{{ url_for('home') }}'">Selah</h1>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">홈</a></li>
+                {% if 'user_id' in session %}
+                    <li><a href="{{ url_for('dashboard') }}">마이페이지</a></li>
+                    <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">로그인</a></li>
+                    <li><a href="{{ url_for('register') }}">회원가입</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="church-detail">
+            <div class="church-header">
+                <div class="church-image-large {{ church.image_url }}">
+                    <div>{{ church.name }}</div>
+                </div>
+                <div class="church-info-large">
+                    <h1>{{ church.name }}</h1>
+                    <p class="address">{{ church.address }}</p>
+                    <p class="description">{{ church.description }}</p>
+                    
+                    <div class="church-stats">
+                        <div class="stat">
+                            <span class="label">수용인원</span>
+                            <span class="value">{{ church.capacity }}명</span>
+                        </div>
+                        <div class="stat">
+                            <span class="label">시간당 요금</span>
+                            <span class="value">{{ "{:,}".format(church.hourly_rate) }}원</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info">
+                        <h3>연락처</h3>
+                        <p><strong>전화:</strong> {{ church.contact_phone }}</p>
+                        <p><strong>이메일:</strong> {{ church.contact_email }}</p>
+                    </div>
+                    
+                    <div class="facilities-info">
+                        <h3>시설</h3>
+                        <p>{{ church.facilities }}</p>
+                    </div>
+                    
+                    <div class="equipment-info">
+                        <h3>구비 장비</h3>
+                        <p>{{ church.equipment }}</p>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="{{ url_for('book_church', church_id=church.id) }}" class="btn btn-primary">예약하기</a>
+                        <a href="{{ url_for('home') }}" class="btn btn-secondary">목록으로</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Selah. 교회 유휴공간과 대학 아마추어 밴드를 연결하는 플랫폼</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 대시보드 - Selah</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-container">
+                <h1>Selah</h1>
+                <ul class="nav-menu">
+                    <li><a href="{{ url_for('home') }}">홈</a></li>
+                    <li><a href="{{ url_for('dashboard') }}">대시보드</a></li>
+                    <li><a href="{{ url_for('admin_dashboard') }}">관리자</a></li>
+                    <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="admin-dashboard">
+                <h2>관리자 대시보드</h2>
+                <p>안녕하세요, {{ session.username }}님! 플랫폼 현황을 확인하세요.</p>
+                
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for message in messages %}
+                                <div class="flash-message">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- 통계 카드 -->
+                <div class="stats-section">
+                    <h3>플랫폼 통계</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>{{ stats.weekly_bookings }}</h4>
+                            <p>주간 예약 수</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>{{ stats.total_bands }}</h4>
+                            <p>등록된 밴드 수</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>{{ stats.total_churches }}</h4>
+                            <p>등록된 교회 수</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>{{ stats.avg_hours }}</h4>
+                            <p>평균 사용 시간</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 인기 교회 차트 -->
+                <div class="stats-section">
+                    <h3>인기 교회 순위</h3>
+                    <div class="chart-container">
+                        <canvas id="popularChurchesChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 인기 교회 목록 -->
+                <div class="stats-section">
+                    <h3>인기 교회 상세</h3>
+                    <div class="popular-churches">
+                        {% for church in stats.popular_churches %}
+                        <div class="church-stat">
+                            <span class="church-name">{{ church[0] }}</span>
+                            <span class="booking-count">{{ church[1] }}회 예약</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Selah - 교회 유휴공간과 대학 아마추어 밴드 연결 플랫폼. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 인기 교회 차트
+        const ctx = document.getElementById('popularChurchesChart').getContext('2d');
+        const popularChurchesData = {{ stats.popular_churches | tojson }};
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: popularChurchesData.map(church => church[0]),
+                datasets: [{
+                    label: '예약 횟수',
+                    data: popularChurchesData.map(church => church[1]),
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

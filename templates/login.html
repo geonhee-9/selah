@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - Selah</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-container">
+                <h1>Selah</h1>
+                <ul class="nav-menu">
+                    <li><a href="{{ url_for('home') }}">홈</a></li>
+                    <li><a href="{{ url_for('login') }}">로그인</a></li>
+                    <li><a href="{{ url_for('register') }}">회원가입</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="auth-form">
+                <h2>로그인</h2>
+                
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for message in messages %}
+                                <div class="flash-message">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="username">사용자명</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">비밀번호</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">로그인</button>
+                    </div>
+                </form>
+                
+                <div class="auth-links">
+                    <p>계정이 없으신가요? <a href="{{ url_for('register') }}">회원가입</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Selah - 교회 유휴공간과 대학 아마추어 밴드 연결 플랫폼. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

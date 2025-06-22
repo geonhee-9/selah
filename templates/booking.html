@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약하기 - Selah</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .nav-container h1 {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        
+        .nav-container h1:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="nav-container">
+            <h1 onclick="window.location.href='{{ url_for('home') }}'">Selah</h1>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">홈</a></li>
+                {% if 'user_id' in session %}
+                    <li><a href="{{ url_for('dashboard') }}">마이페이지</a></li>
+                    <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">로그인</a></li>
+                    <li><a href="{{ url_for('register') }}">회원가입</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="booking-form">
+            <h2>{{ church.name }} 예약하기</h2>
+            <div class="rate-info">
+                시간당 {{ "{:,}".format(church.hourly_rate) }}원
+            </div>
+            
+            <form method="POST">
+                <div class="form-group">
+                    <label for="date">예약 날짜</label>
+                    <input type="date" id="date" name="date" min="{{ today }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="start_time">시작 시간</label>
+                    <select id="start_time" name="start_time" required>
+                        <option value="">시작 시간 선택</option>
+                        <option value="09:00">09:00</option>
+                        <option value="09:30">09:30</option>
+                        <option value="10:00">10:00</option>
+                        <option value="10:30">10:30</option>
+                        <option value="11:00">11:00</option>
+                        <option value="11:30">11:30</option>
+                        <option value="12:00">12:00</option>
+                        <option value="12:30">12:30</option>
+                        <option value="13:00">13:00</option>
+                        <option value="13:30">13:30</option>
+                        <option value="14:00">14:00</option>
+                        <option value="14:30">14:30</option>
+                        <option value="15:00">15:00</option>
+                        <option value="15:30">15:30</option>
+                        <option value="16:00">16:00</option>
+                        <option value="16:30">16:30</option>
+                        <option value="17:00">17:00</option>
+                        <option value="17:30">17:30</option>
+                        <option value="18:00">18:00</option>
+                        <option value="18:30">18:30</option>
+                        <option value="19:00">19:00</option>
+                        <option value="19:30">19:30</option>
+                        <option value="20:00">20:00</option>
+                        <option value="20:30">20:30</option>
+                        <option value="21:00">21:00</option>
+                        <option value="21:30">21:30</option>
+                        <option value="22:00">22:00</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="end_time">종료 시간</label>
+                    <select id="end_time" name="end_time" required>
+                        <option value="">종료 시간 선택</option>
+                        <option value="09:30">09:30</option>
+                        <option value="10:00">10:00</option>
+                        <option value="10:30">10:30</option>
+                        <option value="11:00">11:00</option>
+                        <option value="11:30">11:30</option>
+                        <option value="12:00">12:00</option>
+                        <option value="12:30">12:30</option>
+                        <option value="13:00">13:00</option>
+                        <option value="13:30">13:30</option>
+                        <option value="14:00">14:00</option>
+                        <option value="14:30">14:30</option>
+                        <option value="15:00">15:00</option>
+                        <option value="15:30">15:30</option>
+                        <option value="16:00">16:00</option>
+                        <option value="16:30">16:30</option>
+                        <option value="17:00">17:00</option>
+                        <option value="17:30">17:30</option>
+                        <option value="18:00">18:00</option>
+                        <option value="18:30">18:30</option>
+                        <option value="19:00">19:00</option>
+                        <option value="19:30">19:30</option>
+                        <option value="20:00">20:00</option>
+                        <option value="20:30">20:30</option>
+                        <option value="21:00">21:00</option>
+                        <option value="21:30">21:30</option>
+                        <option value="22:00">22:00</option>
+                        <option value="22:30">22:30</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="member_count">인원</label>
+                    <select id="member_count" name="member_count" required>
+                        <option value="">인원 선택</option>
+                        <option value="1">1인</option>
+                        <option value="5">5인 이하</option>
+                        <option value="10">10인 이하</option>
+                        <option value="20">20인 이하</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="payment_method">결제 방법</label>
+                    <select id="payment_method" name="payment_method" required>
+                        <option value="">결제 방법 선택</option>
+                        <option value="계좌이체">계좌이체</option>
+                        <option value="교회에 직접 납부">교회에 직접 납부</option>
+                        <option value="카드">카드</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="purpose">연습 목적</label>
+                    <textarea id="purpose" name="purpose" rows="3" placeholder="연습 목적을 입력해주세요" required></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">예약하기</button>
+                    <a href="{{ url_for('church_detail', church_id=church.id) }}" class="btn btn-secondary">취소</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Selah. 교회 유휴공간과 대학 아마추어 밴드를 연결하는 플랫폼</p>
+    </footer>
+</body>
+</html>

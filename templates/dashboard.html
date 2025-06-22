@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지 - Selah</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .nav-container h1 {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        
+        .nav-container h1:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="nav-container">
+            <h1 onclick="window.location.href='{{ url_for('home') }}'">Selah</h1>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">홈</a></li>
+                {% if 'user_id' in session %}
+                    <li><a href="{{ url_for('dashboard') }}">마이페이지</a></li>
+                    <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">로그인</a></li>
+                    <li><a href="{{ url_for('register') }}">회원가입</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <h2>{% if is_admin %}관리자 대시보드{% else %}마이페이지{% endif %}</h2>
+            
+            {% if is_admin %}
+                <p>관리자 계정으로 로그인되었습니다. <a href="{{ url_for('admin_dashboard') }}">관리자 통계 보기</a></p>
+            {% endif %}
+            
+            {% if bookings %}
+                <div class="bookings-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>교회명</th>
+                                {% if is_admin %}<th>예약자명</th>{% endif %}
+                                <th>날짜</th>
+                                <th>시간</th>
+                                <th>인원</th>
+                                <th>결제방법</th>
+                                <th>목적</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td>{{ booking.church_name }}</td>
+                                {% if is_admin %}<td>{{ booking.username }}</td>{% endif %}
+                                <td>{{ booking.date }}</td>
+                                <td>{{ booking.start_time }} - {{ booking.end_time }}</td>
+                                <td>{{ booking.member_count }}명</td>
+                                <td>{{ booking.payment_method }}</td>
+                                <td>{{ booking.purpose }}</td>
+                                <td>
+                                    <span class="status status-{{ booking.status }}">
+                                        {% if booking.status == 'pending' %}대기중
+                                        {% elif booking.status == 'confirmed' %}확정
+                                        {% elif booking.status == 'cancelled' %}취소
+                                        {% else %}{{ booking.status }}{% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="no-bookings">
+                    <p>아직 예약한 연습실이 없습니다.</p>
+                    <a href="{{ url_for('home') }}" class="btn btn-primary">연습실 찾기</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Selah. 교회 유휴공간과 대학 아마추어 밴드를 연결하는 플랫폼</p>
+    </footer>
+</body>
+</html>
