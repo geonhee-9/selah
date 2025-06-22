@@ -325,6 +325,41 @@ def admin_dashboard():
     total_churches = cursor.fetchone()[0]
     
     cursor.execute('''
+        SELECT AVG(CAST((julianday(b.end_time) - julianday(b.start_time)) * 24 AS REAL)) as avg_hours
+        FROM bookings b
+        WHERE b.date >= date("now", "-30 days")
+    ''')
+    avg_hours_result = cursor.fetchone()
+    avg_hours = avg_hours_result[0] if avg_hours_result[0] else 0
+    
+    # 월별 예약 추이
+    cursor.execute('''
+        SELECT strftime('%Y-%m', date) as month, COUNT(*) as count
+        FROM bookings
+        WHERE date >= date("now", "-6 months")
+        GROUP BY month
+        ORDER BY month
+    ''')
+    monthly_bookings = cursor.fetchall()
+    
+    # 월 예상 수익 계산
+    cursor.execute('''
+        SELECT SUM(c.hourly_rate * CAST((julianday(b.end_time) - julianday(b.start_time)) * 24 AS REAL)) / 10000
+        FROM bookings b
+        JOIN churches c ON b.church_id = c.id
+        WHERE b.date >= date("now", "-30 days")
+    ''')
+    monthly_revenue_result = cursor.fetchone()
+    monthly_revenue = round(monthly_revenue_result[0], 1) if monthly_revenue_result[0] else 0
+    
+    # 활성 사용자 수 (최근 30일 내 예약한 사용자)
+    cursor.execute('''
+        SELECT COUNT(DISTINCT user_id) FROM bookings 
+        WHERE date >= date("now", "-30 days")
+    ''')
+    active_users = cursor.fetchone()[0]
+    
+    cursor.execute('''
         SELECT c.name, COUNT(b.id) as booking_count
         FROM churches c
         LEFT JOIN bookings b ON c.id = b.church_id
@@ -334,13 +369,82 @@ def admin_dashboard():
     ''')
     popular_churches = cursor.fetchall()
     
+    # 교회 목록 (예약 횟수 포함)
     cursor.execute('''
-        SELECT AVG(CAST((julianday(b.end_time) - julianday(b.start_time)) * 24 AS REAL)) as avg_hours
-        FROM bookings b
-        WHERE b.date >= date("now", "-30 days")
+        SELECT c.*, COUNT(b.id) as booking_count
+        FROM churches c
+        LEFT JOIN bookings b ON c.id = b.church_id
+        GROUP BY c.id
+        ORDER BY c.name
     ''')
-    avg_hours_result = cursor.fetchone()
-    avg_hours = avg_hours_result[0] if avg_hours_result[0] else 0
+    churches_data = cursor.fetchall()
+    
+    churches = []
+    for church in churches_data:
+        churches.append({
+            'id': church[0],
+            'name': church[1],
+            'address': church[2],
+            'description': church[3],
+            'capacity': church[4],
+            'hourly_rate': church[5],
+            'image_url': church[6],
+            'contact_phone': church[7],
+            'contact_email': church[8],
+            'facilities': church[9],
+            'location_tag': church[10],
+            'equipment': church[11],
+            'booking_count': church[12]
+        })
+    
+    # 전체 예약 목록
+    cursor.execute('''
+        SELECT b.*, c.name as church_name, u.username
+        FROM bookings b
+        JOIN churches c ON b.church_id = c.id
+        JOIN users u ON b.user_id = u.id
+        ORDER BY b.created_at DESC
+    ''')
+    all_bookings_data = cursor.fetchall()
+    
+    all_bookings = []
+    for booking in all_bookings_data:
+        all_bookings.append({
+            'id': booking[0],
+            'user_id': booking[1],
+            'church_id': booking[2],
+            'date': booking[3],
+            'start_time': booking[4],
+            'end_time': booking[5],
+            'purpose': booking[6],
+            'member_count': booking[7],
+            'payment_method': booking[8],
+            'status': booking[9],
+            'church_name': booking[10],
+            'username': booking[11]
+        })
+    
+    # 사용자 목록 (예약 횟수 포함)
+    cursor.execute('''
+        SELECT u.*, COUNT(b.id) as booking_count
+        FROM users u
+        LEFT JOIN bookings b ON u.id = b.user_id
+        WHERE u.is_admin = 0
+        GROUP BY u.id
+        ORDER BY u.username
+    ''')
+    users_data = cursor.fetchall()
+    
+    users = []
+    for user in users_data:
+        users.append({
+            'id': user[0],
+            'username': user[1],
+            'email': user[2],
+            'user_type': user[5],
+            'created_at': user[6] if len(user) > 6 else 'N/A',
+            'booking_count': user[7] if len(user) > 7 else 0
+        })
     
     conn.close()
     
@@ -349,10 +453,96 @@ def admin_dashboard():
         'total_bands': total_bands,
         'total_churches': total_churches,
         'avg_hours': round(avg_hours, 1),
-        'popular_churches': popular_churches
+        'monthly_revenue': monthly_revenue,
+        'active_users': active_users,
+        'popular_churches': popular_churches,
+        'monthly_bookings': monthly_bookings
     }
     
-    return render_template('admin.html', stats=stats)
+    return render_template('admin.html', stats=stats, churches=churches, all_bookings=all_bookings, users=users)
+
+@app.route('/admin/church/add', methods=['POST'])
+def add_church():
+    if 'user_id' not in session or not session.get('is_admin'):
+        flash('관리자 권한이 필요합니다.')
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        name = request.form['name']
+        address = request.form['address']
+        description = request.form['description']
+        capacity = request.form['capacity']
+        hourly_rate = request.form['hourly_rate']
+        contact_phone = request.form['contact_phone']
+        contact_email = request.form['contact_email']
+        location_tag = request.form['location_tag']
+        image_url = request.form['image_url']
+        facilities = request.form['facilities']
+        equipment = request.form['equipment']
+        
+        conn = sqlite3.connect('data.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO churches (name, address, description, capacity, hourly_rate, image_url, contact_phone, contact_email, facilities, location_tag, equipment)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (name, address, description, capacity, hourly_rate, image_url, contact_phone, contact_email, facilities, location_tag, equipment))
+        conn.commit()
+        conn.close()
+        
+        flash('교회가 성공적으로 추가되었습니다!')
+        return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/church/<int:church_id>/delete', methods=['DELETE'])
+def delete_church(church_id):
+    if 'user_id' not in session or not session.get('is_admin'):
+        return jsonify({'error': '관리자 권한이 필요합니다.'}), 403
+    
+    conn = sqlite3.connect('data.db')
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM churches WHERE id = ?', (church_id,))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({'success': True})
+
+@app.route('/admin/booking/<int:booking_id>/confirm', methods=['POST'])
+def confirm_booking(booking_id):
+    if 'user_id' not in session or not session.get('is_admin'):
+        return jsonify({'error': '관리자 권한이 필요합니다.'}), 403
+    
+    conn = sqlite3.connect('data.db')
+    cursor = conn.cursor()
+    cursor.execute('UPDATE bookings SET status = ? WHERE id = ?', ('confirmed', booking_id))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({'success': True})
+
+@app.route('/admin/booking/<int:booking_id>/cancel', methods=['POST'])
+def cancel_booking(booking_id):
+    if 'user_id' not in session or not session.get('is_admin'):
+        return jsonify({'error': '관리자 권한이 필요합니다.'}), 403
+    
+    conn = sqlite3.connect('data.db')
+    cursor = conn.cursor()
+    cursor.execute('UPDATE bookings SET status = ? WHERE id = ?', ('cancelled', booking_id))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({'success': True})
+
+@app.route('/admin/user/<int:user_id>/delete', methods=['DELETE'])
+def delete_user(user_id):
+    if 'user_id' not in session or not session.get('is_admin'):
+        return jsonify({'error': '관리자 권한이 필요합니다.'}), 403
+    
+    conn = sqlite3.connect('data.db')
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM users WHERE id = ? AND is_admin = 0', (user_id,))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({'success': True})
 
 @app.route('/logout')
 def logout():

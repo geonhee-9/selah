@@ -6,6 +6,140 @@
     <title>Selah – Connecting Bands with Churches</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .admin-tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-tab {
+            padding: 1rem 2rem;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-tab.active {
+            background: #667eea;
+            color: white;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .admin-tab:hover {
+            background: #5a6fd8;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .church-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .church-list {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .church-list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .church-list th,
+        .church-list td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .church-list th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .stats-grid-extended {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card-extended {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card-extended h4 {
+            font-size: 2rem;
+            color: #667eea;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: 400px;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -26,7 +160,7 @@
         <div class="container">
             <div class="admin-dashboard">
                 <h2>관리자 대시보드</h2>
-                <p>안녕하세요, {{ session.username }}님! 플랫폼 현황을 확인하세요.</p>
+                <p>안녕하세요, {{ session.username }}님! 플랫폼을 관리하세요.</p>
                 
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
@@ -38,47 +172,262 @@
                     {% endif %}
                 {% endwith %}
                 
-                <!-- 통계 카드 -->
-                <div class="stats-section">
-                    <h3>플랫폼 통계</h3>
-                    <div class="stats-grid">
-                        <div class="stat-card">
+                <!-- 관리자 탭 -->
+                <div class="admin-tabs">
+                    <button class="admin-tab active" onclick="showTab('overview')">개요</button>
+                    <button class="admin-tab" onclick="showTab('churches')">교회 관리</button>
+                    <button class="admin-tab" onclick="showTab('bookings')">예약 관리</button>
+                    <button class="admin-tab" onclick="showTab('users')">사용자 관리</button>
+                </div>
+                
+                <!-- 개요 탭 -->
+                <div id="overview" class="tab-content active">
+                    <div class="stats-grid-extended">
+                        <div class="stat-card-extended">
                             <h4>{{ stats.weekly_bookings }}</h4>
                             <p>주간 예약 수</p>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card-extended">
                             <h4>{{ stats.total_bands }}</h4>
                             <p>등록된 밴드 수</p>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card-extended">
                             <h4>{{ stats.total_churches }}</h4>
                             <p>등록된 교회 수</p>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card-extended">
                             <h4>{{ stats.avg_hours }}</h4>
                             <p>평균 사용 시간</p>
                         </div>
-                    </div>
-                </div>
-
-                <!-- 인기 교회 차트 -->
-                <div class="stats-section">
-                    <h3>인기 교회 순위</h3>
-                    <div class="chart-container">
-                        <canvas id="popularChurchesChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- 인기 교회 목록 -->
-                <div class="stats-section">
-                    <h3>인기 교회 상세</h3>
-                    <div class="popular-churches">
-                        {% for church in stats.popular_churches %}
-                        <div class="church-stat">
-                            <span class="church-name">{{ church[0] }}</span>
-                            <span class="booking-count">{{ church[1] }}회 예약</span>
+                        <div class="stat-card-extended">
+                            <h4>{{ stats.monthly_revenue }}</h4>
+                            <p>월 예상 수익 (만원)</p>
                         </div>
-                        {% endfor %}
+                        <div class="stat-card-extended">
+                            <h4>{{ stats.active_users }}</h4>
+                            <p>활성 사용자</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-grid">
+                        <div class="chart-container">
+                            <h3>인기 교회 순위</h3>
+                            <canvas id="popularChurchesChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>월별 예약 추이</h3>
+                            <canvas id="monthlyBookingsChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-section">
+                        <h3>인기 교회 상세</h3>
+                        <div class="popular-churches">
+                            {% for church in stats.popular_churches %}
+                            <div class="church-stat">
+                                <span class="church-name">{{ church[0] }}</span>
+                                <span class="booking-count">{{ church[1] }}회 예약</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 교회 관리 탭 -->
+                <div id="churches" class="tab-content">
+                    <div class="church-form">
+                        <h3>새 교회 추가</h3>
+                        <form method="POST" action="{{ url_for('add_church') }}">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="name">교회명</label>
+                                    <input type="text" id="name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="address">주소</label>
+                                    <input type="text" id="address" name="address" required>
+                                </div>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="description">설명</label>
+                                <textarea id="description" name="description" rows="3" required></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="capacity">수용인원</label>
+                                    <input type="number" id="capacity" name="capacity" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="hourly_rate">시간당 요금 (원)</label>
+                                    <input type="number" id="hourly_rate" name="hourly_rate" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="contact_phone">연락처</label>
+                                    <input type="text" id="contact_phone" name="contact_phone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contact_email">이메일</label>
+                                    <input type="email" id="contact_email" name="contact_email" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="location_tag">지역</label>
+                                    <select id="location_tag" name="location_tag" required>
+                                        <option value="">지역 선택</option>
+                                        <option value="서울 관악구">서울 관악구</option>
+                                        <option value="서울 동작구">서울 동작구</option>
+                                        <option value="서울 노원구">서울 노원구</option>
+                                        <option value="대전">대전</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="image_url">이미지 URL</label>
+                                    <select id="image_url" name="image_url" required>
+                                        <option value="">이미지 선택</option>
+                                        <option value="church1">church1</option>
+                                        <option value="church2">church2</option>
+                                        <option value="church3">church3</option>
+                                        <option value="church4">church4</option>
+                                        <option value="church5">church5</option>
+                                        <option value="church6">church6</option>
+                                        <option value="church7">church7</option>
+                                        <option value="church8">church8</option>
+                                        <option value="church9">church9</option>
+                                        <option value="church10">church10</option>
+                                        <option value="church11">church11</option>
+                                        <option value="church12">church12</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="facilities">시설</label>
+                                <input type="text" id="facilities" name="facilities" placeholder="음향시설, 악기보관함, 주차장, 휴게공간" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="equipment">구비 장비</label>
+                                <input type="text" id="equipment" name="equipment" placeholder="드럼세트, 베이스앰프, 기타앰프, 마이크" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">교회 추가</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="church-list">
+                        <h3>등록된 교회 목록</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>교회명</th>
+                                    <th>지역</th>
+                                    <th>수용인원</th>
+                                    <th>시간당 요금</th>
+                                    <th>예약 횟수</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for church in churches %}
+                                <tr>
+                                    <td>{{ church.name }}</td>
+                                    <td>{{ church.location_tag }}</td>
+                                    <td>{{ church.capacity }}명</td>
+                                    <td>{{ "{:,}".format(int(church.hourly_rate)) }}원</td>
+                                    <td>{{ church.booking_count }}회</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-small btn-secondary" onclick="editChurch({{ church.id }})">수정</button>
+                                            <button class="btn btn-small btn-danger" onclick="deleteChurch({{ church.id }})">삭제</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 예약 관리 탭 -->
+                <div id="bookings" class="tab-content">
+                    <div class="church-list">
+                        <h3>전체 예약 현황</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>예약자</th>
+                                    <th>교회명</th>
+                                    <th>날짜</th>
+                                    <th>시간</th>
+                                    <th>인원</th>
+                                    <th>상태</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in all_bookings %}
+                                <tr>
+                                    <td>{{ booking.username }}</td>
+                                    <td>{{ booking.church_name }}</td>
+                                    <td>{{ booking.date }}</td>
+                                    <td>{{ booking.start_time }} - {{ booking.end_time }}</td>
+                                    <td>{{ booking.member_count }}명</td>
+                                    <td>
+                                        <span class="status status-{{ booking.status }}">
+                                            {% if booking.status == 'pending' %}대기중
+                                            {% elif booking.status == 'confirmed' %}확정
+                                            {% elif booking.status == 'cancelled' %}취소
+                                            {% else %}{{ booking.status }}{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-small btn-primary" onclick="confirmBooking({{ booking.id }})">확정</button>
+                                            <button class="btn btn-small btn-danger" onclick="cancelBooking({{ booking.id }})">취소</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 사용자 관리 탭 -->
+                <div id="users" class="tab-content">
+                    <div class="church-list">
+                        <h3>등록된 사용자</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>사용자명</th>
+                                    <th>이메일</th>
+                                    <th>사용자 유형</th>
+                                    <th>가입일</th>
+                                    <th>예약 횟수</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.user_type }}</td>
+                                    <td>{{ user.created_at }}</td>
+                                    <td>{{ user.booking_count }}회</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-small btn-secondary" onclick="editUser({{ user.id }})">수정</button>
+                                            <button class="btn btn-small btn-danger" onclick="deleteUser({{ user.id }})">삭제</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -92,6 +441,22 @@
     </footer>
 
     <script>
+        function showTab(tabName) {
+            // 모든 탭 내용 숨기기
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // 모든 탭 버튼 비활성화
+            const tabButtons = document.querySelectorAll('.admin-tab');
+            tabButtons.forEach(button => button.classList.remove('active'));
+            
+            // 선택된 탭 내용 보이기
+            document.getElementById(tabName).classList.add('active');
+            
+            // 선택된 탭 버튼 활성화
+            event.target.classList.add('active');
+        }
+        
         // 인기 교회 차트
         const ctx = document.getElementById('popularChurchesChart').getContext('2d');
         const popularChurchesData = {{ stats.popular_churches | tojson }};
@@ -126,6 +491,97 @@
                 }
             }
         });
+        
+        // 월별 예약 추이 차트
+        const monthlyCtx = document.getElementById('monthlyBookingsChart').getContext('2d');
+        const monthlyData = {{ stats.monthly_bookings | tojson }};
+        
+        new Chart(monthlyCtx, {
+            type: 'line',
+            data: {
+                labels: monthlyData.map(item => item[0]),
+                datasets: [{
+                    label: '예약 수',
+                    data: monthlyData.map(item => item[1]),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // 교회 관리 함수들
+        function editChurch(churchId) {
+            if (confirm('교회 정보를 수정하시겠습니까?')) {
+                // 수정 페이지로 이동
+                window.location.href = `/admin/church/${churchId}/edit`;
+            }
+        }
+        
+        function deleteChurch(churchId) {
+            if (confirm('정말로 이 교회를 삭제하시겠습니까?')) {
+                fetch(`/admin/church/${churchId}/delete`, {
+                    method: 'DELETE'
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+        
+        // 예약 관리 함수들
+        function confirmBooking(bookingId) {
+            if (confirm('이 예약을 확정하시겠습니까?')) {
+                fetch(`/admin/booking/${bookingId}/confirm`, {
+                    method: 'POST'
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+        
+        function cancelBooking(bookingId) {
+            if (confirm('이 예약을 취소하시겠습니까?')) {
+                fetch(`/admin/booking/${bookingId}/cancel`, {
+                    method: 'POST'
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+        
+        // 사용자 관리 함수들
+        function editUser(userId) {
+            if (confirm('사용자 정보를 수정하시겠습니까?')) {
+                window.location.href = `/admin/user/${userId}/edit`;
+            }
+        }
+        
+        function deleteUser(userId) {
+            if (confirm('정말로 이 사용자를 삭제하시겠습니까?')) {
+                fetch(`/admin/user/${userId}/delete`, {
+                    method: 'DELETE'
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html> 
