@@ -1,4 +1,4 @@
-# Selah - 교회 유휴공간과 대학 아마추어 밴드 연결 플랫폼
+# Selah – Connecting Bands with Churches
 
 ## 프로젝트 개요
 
