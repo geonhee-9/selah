@@ -22,13 +22,11 @@
             <h1 onclick="window.location.href='{{ url_for('home') }}'">Selah</h1>
             <ul class="nav-menu">
                 <li><a href="{{ url_for('home') }}">홈</a></li>
-                {% if 'user_id' in session %}
-                    <li><a href="{{ url_for('dashboard') }}">마이페이지</a></li>
-                    <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
-                {% else %}
-                    <li><a href="{{ url_for('login') }}">로그인</a></li>
-                    <li><a href="{{ url_for('register') }}">회원가입</a></li>
+                <li><a href="{{ url_for('dashboard') }}">마이페이지</a></li>
+                {% if is_admin %}
+                <li><a href="{{ url_for('admin_dashboard') }}">관리자 통계</a></li>
                 {% endif %}
+                <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
             </ul>
         </nav>
     </header>
@@ -36,6 +34,41 @@
     <div class="container">
         <div class="dashboard">
             <h2>{% if is_admin %}관리자 대시보드{% else %}마이페이지{% endif %}</h2>
+            
+            <div class="my-info" style="background:#f8f9fa; border-radius:10px; padding:1.5rem; margin-bottom:2rem; max-width:400px; display:flex; align-items:center; gap:1.5rem;">
+                <img src="{{ url_for('static', filename='profile_default.png') }}" alt="프로필" style="width:80px; height:80px; border-radius:50%; object-fit:cover; background:#e9ecef; flex-shrink:0;">
+                <div style="flex:1;">
+                    <h3 style="margin-bottom:1rem; color:#667eea;">내 정보</h3>
+                    <form id="editProfileForm" method="POST" action="{{ url_for('edit_profile') }}" style="display:none; flex-direction:column; gap:1rem;">
+                        <label>이름: <input type="text" name="username" value="{{ user_info.username }}" required></label>
+                        <label>이메일: <input type="email" name="email" value="{{ user_info.email }}" required></label>
+                        <label>회원유형:
+                            <select name="user_type" required>
+                                <option value="band" {% if user_info.user_type == '밴드' %}selected{% endif %}>밴드</option>
+                                <option value="individual" {% if user_info.user_type == '개인연주자' %}selected{% endif %}>개인연주자</option>
+                                <option value="teacher" {% if user_info.user_type == '강사' %}selected{% endif %}>강사</option>
+                                <option value="other" {% if user_info.user_type not in ['밴드','개인연주자','강사'] %}selected{% endif %}>기타</option>
+                            </select>
+                        </label>
+                        <div style="margin-top:1rem; display:flex; gap:0.5rem;">
+                            <button type="submit" class="btn btn-primary">저장</button>
+                            <button type="button" class="btn btn-secondary" onclick="toggleEdit(false)">취소</button>
+                        </div>
+                    </form>
+                    <div id="profileView">
+                        <p><strong>이름:</strong> {{ user_info.username }}</p>
+                        <p><strong>이메일:</strong> {{ user_info.email }}</p>
+                        <p><strong>회원유형:</strong> {{ user_info.user_type }}</p>
+                        <button class="btn btn-primary" type="button" onclick="toggleEdit(true)">수정</button>
+                    </div>
+                </div>
+            </div>
+            <script>
+            function toggleEdit(edit) {
+                document.getElementById('editProfileForm').style.display = edit ? 'flex' : 'none';
+                document.getElementById('profileView').style.display = edit ? 'none' : 'block';
+            }
+            </script>
             
             {% if is_admin %}
                 <p>관리자 계정으로 로그인되었습니다. <a href="{{ url_for('admin_dashboard') }}">관리자 통계 보기</a></p>
@@ -47,7 +80,7 @@
                         <thead>
                             <tr>
                                 <th>교회명</th>
-                                {% if is_admin %}<th>예약자명</th>{% endif %}
+                                {% if is_admin %}<th>예약자 이메일</th>{% endif %}
                                 <th>날짜</th>
                                 <th>시간</th>
                                 <th>인원</th>
@@ -60,7 +93,7 @@
                             {% for booking in bookings %}
                             <tr>
                                 <td>{{ booking.church_name }}</td>
-                                {% if is_admin %}<td>{{ booking.username }}</td>{% endif %}
+                                {% if is_admin %}<td>{{ booking.user_email }}</td>{% endif %}
                                 <td>{{ booking.date }}</td>
                                 <td>{{ booking.start_time }} - {{ booking.end_time }}</td>
                                 <td>{{ booking.member_count }}명</td>
@@ -89,7 +122,17 @@
     </div>
 
     <footer>
-        <p>&copy; 2025 Selah – Connecting Bands with Churches All rights reserved.</p>
+        <div class="container" style="text-align:center; padding:2rem 0; color:#555; font-size:1rem;">
+            <p><strong>Selah</strong> – 밴드와 교회를 연결하는 연습실 예약 플랫폼</p>
+            <p>문의: <a href="mailto:selah.help@gmail.com">selah.help@gmail.com</a> | 02-1234-5678</p>
+            <p>
+                <a href="#" style="margin:0 0.5rem;">Instagram</a> |
+                <a href="#" style="margin:0 0.5rem;">Facebook</a> |
+                <a href="#" style="margin:0 0.5rem;">이용약관</a> |
+                <a href="#" style="margin:0 0.5rem;">개인정보처리방침</a>
+            </p>
+            <p style="font-size:0.9em; color:#888; margin-top:1rem;">&copy; 2025 Selah – All rights reserved. Made with ♥ by Selah Team</p>
+        </div>
     </footer>
 </body>
 </html>

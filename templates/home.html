@@ -54,6 +54,9 @@
                 <li><a href="{{ url_for('home') }}">홈</a></li>
                 {% if 'user_id' in session %}
                     <li><a href="{{ url_for('dashboard') }}">마이페이지</a></li>
+                    {% if session.is_admin %}
+                    <li><a href="{{ url_for('admin_dashboard') }}">관리자 통계</a></li>
+                    {% endif %}
                     <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
                 {% else %}
                     <li><a href="{{ url_for('login') }}">로그인</a></li>
@@ -65,7 +68,7 @@
 
     <section class="hero">
         <div class="hero-content">
-            <h2>가까운 교회를 밴드 연습실로!</h2>
+            <h2>가까운 교회를 밴드 연습실로</h2>
             <p>Selah에서 저렴한 가격에 최고의 연습 공간을 찾아보세요.</p>
         </div>
     </section>
@@ -86,7 +89,7 @@
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label for="capacity">최소 수용인원</label>
+                        <label for="capacity">인원</label>
                         <select name="capacity" id="capacity">
                             <option value="">전체</option>
                             <option value="1" {% if selected_capacity == '1' %}selected{% endif %}>1인</option>
@@ -94,6 +97,18 @@
                             <option value="10" {% if selected_capacity == '10' %}selected{% endif %}>10인 이하</option>
                             <option value="20" {% if selected_capacity == '20' %}selected{% endif %}>20인 이하</option>
                         </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>주요 장비</label>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                            {% set equipment_options = ['드럼', '앰프', '마이크', '키보드', '베이스'] %}
+                            {% for eq in equipment_options %}
+                            <label style="display: flex; align-items: center; gap: 0.2rem;">
+                                <input type="checkbox" name="equipment" value="{{ eq }}" {% if eq in selected_equipment %}checked{% endif %}>
+                                {{ eq }}
+                            </label>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
                 <div style="margin-top: 1rem;">
@@ -117,7 +132,7 @@
                         <p class="description">{{ church.description }}</p>
                         <div class="church-details">
                             <span class="capacity">수용인원: {{ church.capacity }}명</span>
-                            <span class="rate">시간당 {{ "{:,}".format(int(church.hourly_rate)) }}원</span>
+                            <span class="rate">시간당 {{ "{:,}".format(church.hourly_rate | int) }}원</span>
                         </div>
                         <p class="facilities"><strong>시설:</strong> {{ church.facilities }}</p>
                         <p class="equipment"><strong>장비:</strong> {{ church.equipment }}</p>
@@ -130,7 +145,17 @@
     </div>
 
     <footer>
-        <p>&copy; 2025 Selah – Connecting Bands with Churches All rights reserved.</p>
+        <div class="container" style="text-align:center; padding:2rem 0; color:#555; font-size:1rem;">
+            <p><strong>Selah</strong> – 밴드와 교회를 연결하는 연습실 예약 플랫폼</p>
+            <p>문의: <a href="mailto:selah.help@gmail.com">selah.help@gmail.com</a> | 02-1234-5678</p>
+            <p>
+                <a href="#" style="margin:0 0.5rem;">Instagram</a> |
+                <a href="#" style="margin:0 0.5rem;">Facebook</a> |
+                <a href="#" style="margin:0 0.5rem;">이용약관</a> |
+                <a href="#" style="margin:0 0.5rem;">개인정보처리방침</a>
+            </p>
+            <p style="font-size:0.9em; color:#888; margin-top:1rem;">&copy; 2025 Selah – All rights reserved. Made with ♥ by Selah Team</p>
+        </div>
     </footer>
 </body>
 </html>

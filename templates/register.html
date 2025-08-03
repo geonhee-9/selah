@@ -5,12 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Selah – Connecting Bands with Churches</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .nav-container h1 {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        
+        .nav-container h1:hover {
+            opacity: 0.8;
+        }
+
+        .other-type-input {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .other-type-input.show {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <header>
         <nav>
             <div class="nav-container">
-                <h1>Selah</h1>
+                <h1 onclick="window.location.href='{{ url_for('home') }}'">Selah</h1>
                 <ul class="nav-menu">
                     <li><a href="{{ url_for('home') }}">홈</a></li>
                     <li><a href="{{ url_for('login') }}">로그인</a></li>
@@ -52,13 +71,17 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="user_type">사용자 유형</label>
-                        <select id="user_type" name="user_type" required>
-                            <option value="">사용자 유형을 선택하세요</option>
-                            <option value="band">대학 아마추어 밴드</option>
-                            <option value="individual">개인 음악인</option>
-                            <option value="music_group">음악 동아리</option>
+                        <label for="user_type">회원 유형</label>
+                        <select id="user_type" name="user_type" required onchange="toggleOtherInput()">
+                            <option value="">회원 유형을 선택하세요</option>
+                            <option value="band">밴드</option>
+                            <option value="individual">개인연주자</option>
+                            <option value="teacher">강사</option>
+                            <option value="other">기타</option>
                         </select>
+                        <div class="other-type-input" id="otherTypeInput">
+                            <input type="text" id="other_type_text" name="other_type_text" placeholder="회원 유형을 입력하세요">
+                        </div>
                     </div>
                     
                     <div class="form-actions">
@@ -74,7 +97,34 @@
     </main>
 
     <footer>
-        <p>&copy; 2025 Selah – Connecting Bands with Churches All rights reserved.</p>
+        <div class="container" style="text-align:center; padding:2rem 0; color:#555; font-size:1rem;">
+            <p><strong>Selah</strong> – 밴드와 교회를 연결하는 연습실 예약 플랫폼</p>
+            <p>문의: <a href="mailto:selah.help@gmail.com">selah.help@gmail.com</a> | 02-1234-5678</p>
+            <p>
+                <a href="#" style="margin:0 0.5rem;">Instagram</a> |
+                <a href="#" style="margin:0 0.5rem;">Facebook</a> |
+                <a href="#" style="margin:0 0.5rem;">이용약관</a> |
+                <a href="#" style="margin:0 0.5rem;">개인정보처리방침</a>
+            </p>
+            <p style="font-size:0.9em; color:#888; margin-top:1rem;">&copy; 2025 Selah – All rights reserved. Made with ♥ by Selah Team</p>
+        </div>
     </footer>
+
+    <script>
+        function toggleOtherInput() {
+            const userType = document.getElementById('user_type').value;
+            const otherInput = document.getElementById('otherTypeInput');
+            const otherTextInput = document.getElementById('other_type_text');
+            
+            if (userType === 'other') {
+                otherInput.classList.add('show');
+                otherTextInput.required = true;
+            } else {
+                otherInput.classList.remove('show');
+                otherTextInput.required = false;
+                otherTextInput.value = '';
+            }
+        }
+    </script>
 </body>
 </html> 

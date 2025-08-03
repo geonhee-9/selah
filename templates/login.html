@@ -5,12 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Selah – Connecting Bands with Churches</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .nav-container h1 {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        
+        .nav-container h1:hover {
+            opacity: 0.8;
+        }
+    </style>
 </head>
 <body>
     <header>
         <nav>
             <div class="nav-container">
-                <h1>Selah</h1>
+                <h1 onclick="window.location.href='{{ url_for('home') }}'">Selah</h1>
                 <ul class="nav-menu">
                     <li><a href="{{ url_for('home') }}">홈</a></li>
                     <li><a href="{{ url_for('login') }}">로그인</a></li>
@@ -37,8 +47,8 @@
                 
                 <form method="POST">
                     <div class="form-group">
-                        <label for="username">사용자명</label>
-                        <input type="text" id="username" name="username" required>
+                        <label for="email">이메일</label>
+                        <input type="email" id="email" name="email" required>
                     </div>
                     
                     <div class="form-group">
@@ -59,7 +69,17 @@
     </main>
 
     <footer>
-        <p>&copy; 2025 Selah – Connecting Bands with Churches All rights reserved.</p>
+        <div class="container" style="text-align:center; padding:2rem 0; color:#555; font-size:1rem;">
+            <p><strong>Selah</strong> – 밴드와 교회를 연결하는 연습실 예약 플랫폼</p>
+            <p>문의: <a href="mailto:selah.help@gmail.com">selah.help@gmail.com</a> | 02-1234-5678</p>
+            <p>
+                <a href="#" style="margin:0 0.5rem;">Instagram</a> |
+                <a href="#" style="margin:0 0.5rem;">Facebook</a> |
+                <a href="#" style="margin:0 0.5rem;">이용약관</a> |
+                <a href="#" style="margin:0 0.5rem;">개인정보처리방침</a>
+            </p>
+            <p style="font-size:0.9em; color:#888; margin-top:1rem;">&copy; 2025 Selah – All rights reserved. Made with ♥ by Selah Team</p>
+        </div>
     </footer>
 </body>
 </html>

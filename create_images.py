@@ -1,5 +1,24 @@
 from PIL import Image, ImageDraw, ImageFont
 import os
+import requests
+
+def download_pretendard_font():
+    """Pretendard 폰트를 다운로드합니다."""
+    font_url = "https://github.com/orioncactus/pretendard/raw/main/dist/web/static/woff2/Pretendard-Regular.woff2"
+    font_path = "Pretendard-Regular.woff2"
+    
+    if not os.path.exists(font_path):
+        print("Pretendard 폰트를 다운로드 중...")
+        try:
+            response = requests.get(font_url)
+            response.raise_for_status()
+            with open(font_path, 'wb') as f:
+                f.write(response.content)
+            print("✅ Pretendard 폰트 다운로드 완료")
+        except Exception as e:
+            print(f"❌ 폰트 다운로드 실패: {e}")
+            return None
+    return font_path
 
 def create_church_image(filename, church_name, color):
     # 800x600 크기의 이미지 생성
@@ -7,12 +26,18 @@ def create_church_image(filename, church_name, color):
     image = Image.new('RGB', (width, height), color)
     draw = ImageDraw.Draw(image)
     
-    # 교회 이름 텍스트 추가
+    # Pretendard 폰트 사용
     try:
-        # 기본 폰트 사용
+        font_path = download_pretendard_font()
+        if font_path and os.path.exists(font_path):
+            # 폰트 크기를 48로 설정
+            font = ImageFont.truetype(font_path, 48)
+        else:
+            # 폰트가 없으면 기본 폰트 사용
+            font = ImageFont.load_default()
+    except Exception as e:
+        print(f"폰트 로드 실패: {e}")
         font = ImageFont.load_default()
-    except:
-        font = None
     
     # 텍스트 크기 계산
     text = church_name

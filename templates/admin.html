@@ -143,16 +143,14 @@
 </head>
 <body>
     <header>
-        <nav>
-            <div class="nav-container">
-                <h1>Selah</h1>
-                <ul class="nav-menu">
-                    <li><a href="{{ url_for('home') }}">홈</a></li>
-                    <li><a href="{{ url_for('dashboard') }}">대시보드</a></li>
-                    <li><a href="{{ url_for('admin_dashboard') }}">관리자</a></li>
-                    <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
-                </ul>
-            </div>
+        <nav class="nav-container">
+            <h1 onclick="window.location.href='{{ url_for('home') }}'">Selah</h1>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">홈</a></li>
+                <li><a href="{{ url_for('dashboard') }}">마이페이지</a></li>
+                <li><a href="{{ url_for('admin_dashboard') }}">관리자 통계</a></li>
+                <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
+            </ul>
         </nav>
     </header>
 
@@ -188,8 +186,8 @@
                             <p>주간 예약 수</p>
                         </div>
                         <div class="stat-card-extended">
-                            <h4>{{ stats.total_bands }}</h4>
-                            <p>등록된 밴드 수</p>
+                            <h4>{{ stats.total_users }}</h4>
+                            <p>등록된 사용자 수</p>
                         </div>
                         <div class="stat-card-extended">
                             <h4>{{ stats.total_churches }}</h4>
@@ -335,7 +333,7 @@
                                     <td>{{ church.name }}</td>
                                     <td>{{ church.location_tag }}</td>
                                     <td>{{ church.capacity }}명</td>
-                                    <td>{{ "{:,}".format(int(church.hourly_rate)) }}원</td>
+                                    <td>{{ "{:,}".format(church.hourly_rate | int) }}원</td>
                                     <td>{{ church.booking_count }}회</td>
                                     <td>
                                         <div class="action-buttons">
@@ -357,7 +355,7 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>예약자</th>
+                                    <th>예약자 이메일</th>
                                     <th>교회명</th>
                                     <th>날짜</th>
                                     <th>시간</th>
@@ -369,7 +367,7 @@
                             <tbody>
                                 {% for booking in all_bookings %}
                                 <tr>
-                                    <td>{{ booking.username }}</td>
+                                    <td>{{ booking.user_email }}</td>
                                     <td>{{ booking.church_name }}</td>
                                     <td>{{ booking.date }}</td>
                                     <td>{{ booking.start_time }} - {{ booking.end_time }}</td>
@@ -404,7 +402,7 @@
                                 <tr>
                                     <th>사용자명</th>
                                     <th>이메일</th>
-                                    <th>사용자 유형</th>
+                                    <th>회원 유형</th>
                                     <th>가입일</th>
                                     <th>예약 횟수</th>
                                     <th>관리</th>
@@ -435,8 +433,16 @@
     </main>
 
     <footer>
-        <div class="container">
-            <p>&copy; 2025 Selah – Connecting Bands with Churches All rights reserved.</p>
+        <div class="container" style="text-align:center; padding:2rem 0; color:#555; font-size:1rem;">
+            <p><strong>Selah</strong> – 밴드와 교회를 연결하는 연습실 예약 플랫폼</p>
+            <p>문의: <a href="mailto:selah.help@gmail.com">selah.help@gmail.com</a> | 02-1234-5678</p>
+            <p>
+                <a href="#" style="margin:0 0.5rem;">Instagram</a> |
+                <a href="#" style="margin:0 0.5rem;">Facebook</a> |
+                <a href="#" style="margin:0 0.5rem;">이용약관</a> |
+                <a href="#" style="margin:0 0.5rem;">개인정보처리방침</a>
+            </p>
+            <p style="font-size:0.9em; color:#888; margin-top:1rem;">&copy; 2025 Selah – All rights reserved. Made with ♥ by Selah Team</p>
         </div>
     </footer>
 
